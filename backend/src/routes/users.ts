@@ -24,7 +24,7 @@ router.post("/register",
                 email: req.body.email,
             });
             if (user) {
-                return res.status(400).json({ message: "User already exists!" });
+                return res.status(401).json({ message: "User already exists!" });
             }
 
             user = new User(req.body);
