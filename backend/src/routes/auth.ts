@@ -3,6 +3,7 @@ import { check, validationResult } from "express-validator";
 import User from "../models/user";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import verifyToken from "../middleware/auth";
 
 const router = express.Router();
 
@@ -23,13 +24,13 @@ router.post("/login",
         const { email, password } = req.body;
 
         try {
-            let user = await User.findOne({email});
+            let user = await User.findOne({ email });
             if (!user) {
                 return res.status(400).json({ message: "Email or password incorrect!" });
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
-            if(!isMatch) {
+            if (!isMatch) {
                 return res.status(400).json({ message: "Email or password incorrect!" });
             }
 
@@ -42,15 +43,21 @@ router.post("/login",
             res.cookie("auth_token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 24*60*60*1000,
+                maxAge: 24 * 60 * 60 * 1000,
             });
 
-            res.status(200).json({userId: user.id})
+            res.status(200).json({ userId: user.id })
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: "Wrong Login" })
         }
 
-    });
+    }
+);
+
+router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
+    res.status(200).send({ userId: req.userId });
+});
+
 
 export default router;
