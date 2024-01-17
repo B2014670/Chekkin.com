@@ -5,9 +5,15 @@ import authRouters from './routes/auth';
 import userRouters from './routes/users';
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
+import { error } from 'console';
 dotenv.config();
 
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string) //cloud
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING || "mongodb://127.0.0.1:27017/hotel" as string ) //cloud
+  .then(() => {
+    console.log("Connected to database: ",
+      process.env.MONGODB_CONNECTION_STRING)
+  })
+  .catch(error)
 // mongoose.connect("mongodb://127.0.0.1:27017/hotel" as string) 
 
 const app = express();
