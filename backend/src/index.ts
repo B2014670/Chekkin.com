@@ -6,6 +6,7 @@ import userRouters from './routes/users';
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import { error } from 'console';
+import path from 'path';
 dotenv.config();
 
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING || "mongodb://127.0.0.1:27017/hotel" as string ) //cloud
@@ -27,6 +28,7 @@ app.use(
   })
 );
 
+app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 app.use("/api/auth", authRouters);
 app.use("/api/users", userRouters);
 
