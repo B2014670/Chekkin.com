@@ -4,10 +4,18 @@ import mongoose from 'mongoose';
 import authRouters from './routes/auth';
 import userRouters from './routes/users';
 import cookieParser from "cookie-parser";
-import dotenv from 'dotenv';
 import { error } from 'console';
 import path from 'path';
+import dotenv from 'dotenv';
 dotenv.config();
+
+import {v2 as cloudinary} from 'cloudinary';
+          
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING || "mongodb://127.0.0.1:27017/hotel" as string ) //cloud
   .then(() => {
