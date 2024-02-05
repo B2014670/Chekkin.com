@@ -45,6 +45,7 @@ const SignIn = () => {
                 Email
                 <input
                     type="email"
+                    autoFocus
                     className="border rounded w-full py-1 px-2 font-normal"
                     {...register("email", { required: "This field is required" })}
                 ></input>

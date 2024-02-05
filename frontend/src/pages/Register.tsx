@@ -16,7 +16,7 @@ const Register = () => {
   const { showToast } = useAppContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
- 
+
   const {
     register,
     watch,
@@ -26,7 +26,7 @@ const Register = () => {
 
   //reactQuery to fetch data to api
   const mutation = useMutation(apiClient.register, {
-    onSuccess: async() => {
+    onSuccess: async () => {
       showToast({ message: "Registration Success!", type: "SUCCESS" })
       await queryClient.invalidateQueries("validateToken");
       navigate("/");
@@ -50,6 +50,7 @@ const Register = () => {
         <label className="text-gray-700 text-sm font-bold flex-1">
           First Name
           <input
+            autoFocus
             className="border rounded w-full py-1 px-2 font-normal"
             {...register("firstName", { required: "This field is required" })}
           ></input>

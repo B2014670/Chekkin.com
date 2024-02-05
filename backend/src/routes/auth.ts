@@ -7,7 +7,7 @@ import verifyToken from "../middleware/auth";
 
 const router = express.Router();
 
-/* /api/auth/login */
+// api/auth
 router.post("/login",
     [
         check("email", "Email is required").isEmail(),
