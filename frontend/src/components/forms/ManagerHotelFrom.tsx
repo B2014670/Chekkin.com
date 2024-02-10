@@ -62,7 +62,7 @@ const ManagerHotelFrom = ({ onSave, isLoading }: Props) => {
     });
 
     const handleFileChange = (files: FileList | null, previews: string[]) => {
-        // console.log('File changed in parent:', files);
+        console.log('File changed in parent:', files);
         setPreviews(previews);
     };
 
