@@ -18,14 +18,14 @@ router.post("/",
         body("description").notEmpty().withMessage("Description is required"),
         body("type").notEmpty().withMessage("Hotel type is required"),
         body("pricePerNight")
-          .notEmpty()
-          .isNumeric()
-          .withMessage("Price per night is required and must be a number"),
+            .notEmpty()
+            .isNumeric()
+            .withMessage("Price per night is required and must be a number"),
         body("facilities")
-          .notEmpty()
-          .isArray()
-          .withMessage("Facilities are required"),
-      ],
+            .notEmpty()
+            .isArray()
+            .withMessage("Facilities are required"),
+    ],
     upload.array("imageFiles", 6),
     async (req: Request, res: Response) => { // & { files: Express.Multer.File[] }
         try {
@@ -56,4 +56,26 @@ router.post("/",
         }
     }
 );
+
+router.get("/", verifyToken, async (req: Request, res: Response) => {
+    try {
+        const hotels = await Hotel.find({ userId: req.userId });
+        res.json(hotels)
+    } catch (error) {
+        return res.status(500).json({ message: "Error went find your hotels!" });
+    }
+});
+
+router.get("/:id", verifyToken, async (req: Request, res: Response) => {
+    const id = req.params.id.toString();
+    try {
+        const hotels = await Hotel.findOne({ 
+            _id: id,
+            userId: req.userId            
+        });
+        res.json(hotels)
+    } catch (error) {
+        return res.status(500).json({ message: "Error went find this hotel!" });
+    }
+});
 export default router;
