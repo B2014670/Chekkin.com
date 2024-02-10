@@ -39,7 +39,6 @@ const MyHotels = () => {
                     >
                         <h2 className="text-2xl font-bold">{hotel.name}</h2>
                         <div className="whitespace-pre-line">
-                            {/* {hotel.description} */}
                             <Description longText={hotel.description} />
                         </div>
 
