@@ -41,6 +41,10 @@ app.use("/api/auth", authRouters);
 app.use("/api/users", userRouters);
 app.use("/api/my-hotels", myHotelRouters);
 
+//serve a static HTML file for all routes that don't match other routes
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+});
 app.listen(9000, () => {
   console.log(`Server is running at http://localhost:9000`);
 });
