@@ -34,18 +34,15 @@ router.post("/",
 
             //cast req.files to an array of Express.Multer.File objects.
             const imageFiles = req.files as Express.Multer.File[];
+            
             //upload images to cloudinary
-            const uploadPromises = imageFiles.map(async (image) => {
-                const b64 = Buffer.from(image.buffer).toString("base64");
-                let dataURI = "data:" + image.mimetype + ";base64," + b64;
-                const res = await cloudinary.v2.uploader.upload(dataURI);
-                return res.url;
-            });
-            const imageUrls = await Promise.all(uploadPromises);
+            const imageUrls = await uploadImages(imageFiles);
+
             //add URL images to new hotel
             newHotel.imageUrls = imageUrls;
             newHotel.lastUpdated = new Date();
             newHotel.userId = req.userId;
+
             //save new hotel to database
             const hotel = new Hotel(newHotel);
             await hotel.save();
@@ -70,13 +67,64 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
 router.get("/:id", verifyToken, async (req: Request, res: Response) => {
     const id = req.params.id.toString();
     try {
-        const hotels = await Hotel.findOne({ 
+        const hotels = await Hotel.findOne({
             _id: id,
-            userId: req.userId            
+            userId: req.userId
         });
         res.json(hotels)
     } catch (error) {
         return res.status(500).json({ message: "Error went find this hotel!" });
     }
 });
+
+router.patch(
+    "/:hotelId",
+    verifyToken,
+    upload.array("imageFiles", 6),
+    async (req: Request, res: Response) => {
+        try {
+            const updatedHotel = req.body as HotelType;
+            updatedHotel.lastUpdated = new Date();
+
+            const hotel = await Hotel.findOneAndUpdate(
+                {
+                    _id: req.params.hotelId,
+                    userId: req.userId,
+                },
+                updatedHotel,
+                { new: true }
+            );
+
+            if (!hotel) {
+                return res.status(404).json({ message: "Hotel not found" });
+            }
+
+            //update image
+            const imageFiles = req.files as Express.Multer.File[];
+            const updatedImageUrls = await uploadImages(imageFiles);
+
+            hotel.imageUrls = [
+                ...updatedImageUrls,//update new file image
+                ...(updatedHotel.imageUrls || []),//up date old url image when delete 
+            ];
+
+            await hotel.save();
+            res.status(201).json(hotel);
+        } catch (error) {
+            res.status(500).json({ message: "Something went throw" });
+        }
+    }
+);
+
+async function uploadImages(imageFiles: Express.Multer.File[]) {
+    const uploadPromises = imageFiles.map(async (image) => {
+      const b64 = Buffer.from(image.buffer).toString("base64");
+      let dataURI = "data:" + image.mimetype + ";base64," + b64;
+      const res = await cloudinary.v2.uploader.upload(dataURI);
+      return res.url;
+    });
+  
+    const imageUrls = await Promise.all(uploadPromises);
+    return imageUrls;
+  }
 export default router;
