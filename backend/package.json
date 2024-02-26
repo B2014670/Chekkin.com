@@ -7,8 +7,7 @@
     "dev": "cross-env NODE_ENV=production nodemon",
     "build": "npm install && npx tsc",
     "start": "node ./dist/index.js",
-    "e2e": "cross-env NODE_ENV=development nodemon",
-    "test": "cross-env NODE_ENV=development nodemon"
+    "e2e": "cross-env NODE_ENV=development nodemon"
   },
   "author": "",
   "license": "ISC",

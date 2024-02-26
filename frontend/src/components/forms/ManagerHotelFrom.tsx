@@ -41,7 +41,7 @@ const ManagerHotelFrom = ({ hotel, onSave, isLoading, actionForm }: Props) => {
     const onSubmit = handleSubmit((formDataJson: HotelFormData) => {
         //delete preview div
         setPreviews([]);
-        
+
         // create new object && call API 
         const formData = new FormData();
         if (hotel) {
@@ -86,14 +86,14 @@ const ManagerHotelFrom = ({ hotel, onSave, isLoading, actionForm }: Props) => {
         //without pass through props
         <form className=" flex flex-col gap-10" onSubmit={onSubmit} >
             <FormProvider {...formMethods}>
-                <DetailsSection action={actionForm}/>
+                <DetailsSection action={actionForm} />
                 <TypeSection />
                 <FacilitiesSection />
                 <GuestsSection />
                 <ImagesSection onFileChange={handleFileChange} />
 
 
-                {(previews.length > 0 ) && (
+                {(previews.length > 0) && (
                     <div>
                         <h2 className="text-2xl font-bold mb-3 gap-0">Preview Addition Image </h2>
                         <div className="grid grid-cols-2 lg:grid-cols-6 md:grid-cols-3 gap-4">
@@ -121,7 +121,12 @@ const ManagerHotelFrom = ({ hotel, onSave, isLoading, actionForm }: Props) => {
                         type="submit"
                         className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl disabled:bg-gray-500"
                     >
-                        {isLoading ? "Saving..." : "Save"}
+                        {(actionForm === 'Edit') &&
+                            (isLoading ? "Updating..." : "Update")
+                        }
+                        {(actionForm === 'Add') &&
+                            (isLoading ? "Saving..." : "Save")
+                        }
                     </button>
                 </span>
             </FormProvider>
