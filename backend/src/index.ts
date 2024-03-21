@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import authRouters from './routes/auth';
 import userRouters from './routes/users';
 import myHotelRouters from './routes/my-hotels';
+import hotelRouters from './routes/hotels';
 import cookieParser from "cookie-parser";
 import { error } from 'console';
 import path from 'path';
@@ -18,6 +19,7 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
 
 connectDB();
 
@@ -35,6 +37,7 @@ app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 app.use("/api/auth", authRouters);
 app.use("/api/users", userRouters);
 app.use("/api/my-hotels", myHotelRouters);
+app.use("/api/hotels", hotelRouters);
 
 //serve a static HTML file for all routes that don't match other routes
 app.get("*", (req: Request, res: Response) => {
@@ -43,4 +46,5 @@ app.get("*", (req: Request, res: Response) => {
 
 app.listen(9000, () => {
   console.log(`Server is running at http://localhost:9000`);
+  console.log(process.env.CLOUDINARY_CLOUD_NAME);
 });

@@ -73,7 +73,7 @@ const SignIn = () => {
             <span className="flex items-center justify-between">
                 <span className="text-sm">
                     Not Registered?{" "}
-                    <Link className="underline" to="/register">
+                    <Link className="underline text-blue-600 font-bold" to="/register">
                         Create an account here
                     </Link>
                 </span>

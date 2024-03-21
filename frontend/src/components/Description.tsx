@@ -9,14 +9,14 @@ const description = ({ longText }: ShowMoreTextComponentProps) => {
       lines={2}
       more={
         <span
-          className="text-gray-400 hover:underline cursor-pointer"
+          className="text-blue-600 hover:underline cursor-pointer"
         >
           Show more
         </span>
       }
       less={
         <span
-          className="text-gray-400 hover:underline cursor-pointer"
+          className="text-blue-600 hover:underline cursor-pointer"
         >
           Show less
         </span>

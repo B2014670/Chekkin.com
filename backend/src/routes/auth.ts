@@ -1,10 +1,9 @@
 import express, { Request, Response } from "express";
 import { check, validationResult } from "express-validator";
 import User from "../models/user";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import verifyToken from "../middleware/auth";
-
 const router = express.Router();
 
 // api/auth
@@ -21,8 +20,8 @@ router.post("/login",
             return res.status(400).json({ message: errors.array() });
         }
 
+        req.body.email = req.body.email.toLowerCase();
         const { email, password } = req.body;
-
         try {
             let user = await User.findOne({ email });
             if (!user) {
@@ -37,10 +36,22 @@ router.post("/login",
             const token = jwt.sign(
                 { userId: user.id },
                 process.env.JWT_SECRET_KEY as string,
-                { expiresIn: "1d", }
+                { expiresIn: "15m", }
             );
 
+            const refreshToken = jwt.sign(
+                { userId: user.id },
+                process.env.JWT_REFRESH_KEY as string,
+                { expiresIn: "1d", }
+            )
+
             res.cookie("auth_token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+
+            res.cookie("auth_refresh_token", refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 24 * 60 * 60 * 1000,
@@ -59,8 +70,39 @@ router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
     res.status(200).send({ userId: req.userId });
 });
 
-router.post("/logout", (req: Request, res: Response) =>{
+router.post('/token', (req: Request, res: Response) => {
+    // refresh the access token
+    const refresh_token = req.cookies["auth_refresh_token"];
+
+    // if refresh token exists
+    if (!refresh_token) return res.status(404).send('refresh_token null');
+
+    try {
+        const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_KEY as string);
+        const userId = (decoded as JwtPayload).userId;
+        const token = jwt.sign(
+            { userId: userId },
+            process.env.JWT_SECRET_KEY as string,
+            { expiresIn: "15m", }
+        );
+        const response = {
+            "token": token,
+        }
+        res.status(200).json(response);
+
+    } catch (error) {
+        return res.status(401).json({ message: "Unauthorized access" });
+    } 
+})
+
+
+
+
+router.post("/logout", (req: Request, res: Response) => {
     res.cookie("auth_token", "", {
+        expires: new Date(0),
+    });
+    res.cookie("auth_refresh_token", "", {
         expires: new Date(0),
     });
     res.status(200).send();

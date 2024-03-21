@@ -34,7 +34,7 @@ router.post("/",
 
             //cast req.files to an array of Express.Multer.File objects.
             const imageFiles = req.files as Express.Multer.File[];
-            
+
             //upload images to cloudinary
             const imageUrls = await uploadImages(imageFiles);
 
@@ -95,6 +95,7 @@ router.patch(
                 { new: true }
             );
 
+
             if (!hotel) {
                 return res.status(404).json({ message: "Hotel not found" });
             }
@@ -102,6 +103,11 @@ router.patch(
             //update image
             const imageFiles = req.files as Express.Multer.File[];
             const updatedImageUrls = await uploadImages(imageFiles);
+
+            //delete image
+            if (updatedHotel.imageUrlsDelete) {
+                await deleteImages(updatedHotel.imageUrlsDelete);
+            }
 
             hotel.imageUrls = [
                 ...updatedImageUrls,//update new file image
@@ -117,14 +123,28 @@ router.patch(
 );
 
 async function uploadImages(imageFiles: Express.Multer.File[]) {
+    const options = {
+        folder: process.env.CLOUDINARY_CLOUD_FOLDER, // Specify the folder in which the file should be stored
+    };
     const uploadPromises = imageFiles.map(async (image) => {
-      const b64 = Buffer.from(image.buffer).toString("base64");
-      let dataURI = "data:" + image.mimetype + ";base64," + b64;
-      const res = await cloudinary.v2.uploader.upload(dataURI);
-      return res.url;
+        const b64 = Buffer.from(image.buffer).toString("base64");
+        let dataURI = "data:" + image.mimetype + ";base64," + b64;
+        const res = await cloudinary.v2.uploader.upload(dataURI, options);
+        return res.url;
     });
-  
+
     const imageUrls = await Promise.all(uploadPromises);
     return imageUrls;
-  }
+}
+
+async function deleteImages(imageUrlsDelete: string[]) {
+    imageUrlsDelete.map(async (url) => {
+        const regex = /\/v\d+\/(.*?)\./;
+        const result = url.match(regex);
+        if (result && result.length > 1) {
+            const public_id = result[1];
+            await cloudinary.v2.uploader.destroy(public_id);
+        }
+    });
+}
 export default router;

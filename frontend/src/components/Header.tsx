@@ -5,7 +5,7 @@ import SignOutButton from './SignOutButton';
 const Header = () => {
     const { isLogin } = useAppContext();
     return (
-        <div className="bg-blue-800 py-6">
+        <div className="bg-blue-800 py-3">
             <div className="container flex mx-auto justify-between">
                 <span className="text-3xl text-white font-bold tracking-tight">
                     <Link to="/"> Checkin.com</Link>
@@ -33,7 +33,7 @@ const Header = () => {
                             to="/sign-in"
                             className="flex bg-white items-center text-blue-600 px-3 font-bold hover:bg-gray-100"
                         >
-                            Sign In
+                            Sign in
                         </Link>
                     )}
                 </span>

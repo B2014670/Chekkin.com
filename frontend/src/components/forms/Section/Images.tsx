@@ -1,11 +1,12 @@
 import { useFormContext } from "react-hook-form";
 import { HotelFormData } from "../ManagerHotelFrom";
+import { useEffect, useState } from "react";
 
 type ChildComponentProps = {
-    onFileChange: (files: FileList | null, previews: string[]) => void;
+    isLoading: boolean;
 }
 
-const ImagesSection = ({ onFileChange }: ChildComponentProps) => {
+const ImagesSection = ({ isLoading }: ChildComponentProps) => {
     const {
         register,
         formState: { errors },
@@ -13,28 +14,29 @@ const ImagesSection = ({ onFileChange }: ChildComponentProps) => {
         setValue,
     } = useFormContext<HotelFormData>();
 
+    const [previews, setPreviews] = useState<string[]>([]);
+
+    useEffect(() => {
+        setPreviews([]);
+    }, [isLoading]);
+
     const existingImageUrls = watch("imageUrls");
+    const existingUrlsDelete = watch("imageUrlsDelete") || [];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (files && files.length > 0) {
             const fileReaders: FileReader[] = Array.from(files).map((file: File) => {
                 const reader = new FileReader();
-
                 reader.onload = () => {
-                    // Send the selected files and the data URL to the parent
-                    onFileChange(files, fileReaders.map((reader) => reader.result as string));
+                    setPreviews(fileReaders.map((reader) => reader.result as string));
                 };
-
                 reader.readAsDataURL(file);
-
                 return reader;
             });
-        } else {
-            // No files selected, send null to the parent
-            onFileChange(null, []);
         }
     }
+
     const handleDelete = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
         imageUrl: string
@@ -44,6 +46,9 @@ const ImagesSection = ({ onFileChange }: ChildComponentProps) => {
             "imageUrls",
             existingImageUrls.filter((url) => url !== imageUrl)
         );
+        const updatedUrlsDelete = [...existingUrlsDelete, imageUrl];
+        setValue("imageUrlsDelete", updatedUrlsDelete);
+        console.log('existingUrlsDelete',existingUrlsDelete)
     };
 
     return (
@@ -96,6 +101,24 @@ const ImagesSection = ({ onFileChange }: ChildComponentProps) => {
                     {errors.imageFiles.message}
                 </span>
             )}
+
+            {(previews.length > 0) && (
+                <div>
+                    <h2 className="text-2xl font-bold mb-3 gap-0">Preview Addition Image </h2>
+                    <div className="grid grid-cols-2 lg:grid-cols-6 md:grid-cols-3 gap-4">
+
+                        {previews.map((preview, index) => (
+                            <img
+                                key={index}
+                                src={preview}
+                                alt={`Preview ${index + 1}`}
+                                className="h-auto max-w-full rounded-lg"
+                            />
+                        ))}
+                    </div>
+                </div>
+            )
+            }
         </div>
     );
 };

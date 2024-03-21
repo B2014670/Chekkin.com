@@ -20,7 +20,11 @@ const AddHotel = () => {
     mutate(hotelFormData);
   };
 
-  return <ManagerHotelFrom actionForm="Add" onSave={handleSave} isLoading={isLoading} />;
+  return (
+    <div className="py-5">
+      <ManagerHotelFrom actionForm="Add" onSave={handleSave} isLoading={isLoading} />
+    </div>
+  )
 };
 
 export default AddHotel;

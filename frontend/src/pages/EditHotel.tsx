@@ -9,8 +9,8 @@ const EditHotel = () => {
   const { showToast } = useAppContext();
 
   const { data: hotelData } = useQuery(
-    "fetchHotelById", //key
-    () => apiClient.fetchHotelById(hotelId || ""), // Pass a function reference
+    "fetchMyHotelById", //key
+    () => apiClient.fetchMyHotelById(hotelId || ""), // Pass a function reference
     {
       enabled: !!hotelId, //Enable the query if hotelId is truthy
     }
@@ -32,7 +32,11 @@ const EditHotel = () => {
   };
 
 
-  return <ManagerHotelFrom actionForm="Edit" hotel={hotelData} onSave={handleSave} isLoading={isLoading} />;
+  return (
+    <div className="py-5">
+      <ManagerHotelFrom actionForm="Edit" hotel={hotelData} onSave={handleSave} isLoading={isLoading} />;
+    </div>
+  )
 };
 
 

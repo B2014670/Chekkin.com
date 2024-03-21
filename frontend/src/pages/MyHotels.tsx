@@ -13,7 +13,7 @@ const MyHotels = () => {
                 console.log('Error fetching hotels fe:', error);
             },
         }
-    )
+    );
 
     if (!hotelData) {
         return <span>No Hotels found</span>;
@@ -21,7 +21,7 @@ const MyHotels = () => {
 
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-5 py-5">
             <span className="flex justify-between">
                 <h1 className="text-3xl font-bold">My Hotels</h1>
                 <Link
