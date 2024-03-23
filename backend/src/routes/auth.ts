@@ -4,6 +4,7 @@ import User from "../models/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import verifyToken from "../middleware/auth";
+import { generateAccessToken, generateRefreshToken } from "../configs/generateToken";
 const router = express.Router();
 
 // api/auth
@@ -33,17 +34,9 @@ router.post("/login",
                 return res.status(400).json({ message: "Email or password incorrect!" });
             }
 
-            const token = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_SECRET_KEY as string,
-                { expiresIn: "15m", }
-            );
+            const token = generateAccessToken({ userId: user.id });
 
-            const refreshToken = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_REFRESH_KEY as string,
-                { expiresIn: "1d", }
-            )
+            const refreshToken = generateRefreshToken({ userId: user.id });
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
@@ -80,11 +73,9 @@ router.post('/token', (req: Request, res: Response) => {
     try {
         const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_KEY as string);
         const userId = (decoded as JwtPayload).userId;
-        const token = jwt.sign(
-            { userId: userId },
-            process.env.JWT_SECRET_KEY as string,
-            { expiresIn: "15m", }
-        );
+
+        const token = generateAccessToken({ userId: userId });
+
         const response = {
             "token": token,
         }

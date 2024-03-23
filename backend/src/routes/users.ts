@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import User from "../models/user";
 import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
+import { generateAccessToken } from "../configs/generateToken";
 const router = express.Router();
 
 // api/users 
@@ -30,11 +31,7 @@ router.post("/register",
             user = new User(req.body);
             await user.save();
 
-            const token = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_SECRET_KEY as string,
-                { expiresIn: "1d", }
-            );
+            const token = generateAccessToken({ userId: user.id });
 
             res.cookie("auth_token", token, {
                 httpOnly: true,

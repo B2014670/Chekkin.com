@@ -11,15 +11,11 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import connectDB from './configs/db';
+import connectCloudinary from './configs/cloudinary';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
+connectCloudinary();
 
 connectDB();
 
@@ -46,5 +42,4 @@ app.get("*", (req: Request, res: Response) => {
 
 app.listen(9000, () => {
   console.log(`Server is running at http://localhost:9000`);
-  console.log(process.env.CLOUDINARY_CLOUD_NAME);
 });
