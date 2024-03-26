@@ -24,7 +24,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
                 const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_KEY as string);
                 const userId = (decoded as JwtPayload).userId;
 
-                const token = generateAccessToken({ userId: userId });
+                const token = generateAccessToken( userId );
 
                 res.cookie("auth_token", token, {
                     httpOnly: true,
@@ -51,5 +51,6 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json({ message: "Unauthorized access" });
     }
 }
+
 
 export default verifyToken;

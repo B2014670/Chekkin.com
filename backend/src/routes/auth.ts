@@ -34,9 +34,9 @@ router.post("/login",
                 return res.status(400).json({ message: "Email or password incorrect!" });
             }
 
-            const token = generateAccessToken({ userId: user.id });
+            const token = generateAccessToken( user.id );
 
-            const refreshToken = generateRefreshToken({ userId: user.id });
+            const refreshToken = generateRefreshToken( user.id );
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
@@ -50,7 +50,7 @@ router.post("/login",
                 maxAge: 24 * 60 * 60 * 1000,
             });
 
-            res.status(200).json({ userId: user.id })
+            res.status(200).json({ userId: user._id })
         } catch (error) {
             console.log(error);
             res.status(500).send({ message: "Wrong Login" })
@@ -74,7 +74,7 @@ router.post('/token', (req: Request, res: Response) => {
         const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_KEY as string);
         const userId = (decoded as JwtPayload).userId;
 
-        const token = generateAccessToken({ userId: userId });
+        const token = generateAccessToken( userId );
 
         const response = {
             "token": token,

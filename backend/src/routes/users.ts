@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import User from "../models/user";
 import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
-import { generateAccessToken } from "../configs/generateToken";
+import { generateAccessToken, generateRefreshToken } from "../configs/generateToken";
 const router = express.Router();
 
 // api/users 
@@ -31,12 +31,19 @@ router.post("/register",
             user = new User(req.body);
             await user.save();
 
-            const token = generateAccessToken({ userId: user.id });
+            const token = generateAccessToken( user.id );
+            const refreshToken = generateRefreshToken( user.id );
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                maxAge: 24*60*60*1000,
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+
+            res.cookie("auth_refresh_token", refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                maxAge: 24 * 60 * 60 * 1000,
             });
 
             return res.status(200).send({ message: "User registered OK" });
