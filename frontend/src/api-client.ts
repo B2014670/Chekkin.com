@@ -1,6 +1,6 @@
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
-import { HotelSearchResponse, HotelType, SearchParams } from "../../backend/src/shared/types"
+import { HotelSearchResponse, HotelType, SearchParams, UserType } from "../../backend/src/shared/types"
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export const register = async (formData: RegisterFormData) => {
@@ -34,6 +34,17 @@ export const signIn = async (formData: SignInFormData) => {
     throw new Error(responseBody.message);
   }
   return responseBody;
+};
+
+export const fetchCurrentUser = async (): Promise<UserType> => {
+  const response = await fetch(`${API_BASE_URL}/api/users/me`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Error during fetchUser");
+  }
+  return response.json();
 };
 
 export const validateToken = async () => {
@@ -71,7 +82,7 @@ export const addMyHotel = async (hotelFormData: FormData) => {
   return response.json();
 };
 
-export const fetchHotels = async (): Promise<HotelType[]> => {
+export const fetchMyHotels = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
     method: "GET",
     credentials: "include",
@@ -110,6 +121,17 @@ export const UpdateMyHotelById = async (hotelFormData: FormData) => {
   });
   if (!response.ok) {
     throw new Error("Error during Saving");
+  }
+  return response.json();
+};
+
+export const deleteMyHotelById = async (hotelId: String) : Promise<HotelType> => {
+  const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error("Error during deleteHotel!");
   }
   return response.json();
 };

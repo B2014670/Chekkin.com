@@ -48,7 +48,7 @@ const ImagesSection = ({ isLoading }: ChildComponentProps) => {
         );
         const updatedUrlsDelete = [...existingUrlsDelete, imageUrl];
         setValue("imageUrlsDelete", updatedUrlsDelete);
-        console.log('existingUrlsDelete',existingUrlsDelete)
+        console.log('existingUrlsDelete', existingUrlsDelete)
     };
 
     return (
@@ -117,8 +117,7 @@ const ImagesSection = ({ isLoading }: ChildComponentProps) => {
                         ))}
                     </div>
                 </div>
-            )
-            }
+            )}
         </div>
     );
 };

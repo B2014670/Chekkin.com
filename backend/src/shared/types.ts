@@ -38,3 +38,11 @@ export type SearchParams = {
   maxPrice?: string;
   sortOption?: string
 };
+
+export type UserType = {
+  _id: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+};

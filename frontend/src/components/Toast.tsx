@@ -10,7 +10,7 @@ const Toast = ({ message, type, onClose }: ToastProp) => {
     useEffect(() => {
         const timeoutToast = setTimeout(() => {
             onClose();
-        }, 5000);
+        }, 3000);
 
         return () => clearTimeout(timeoutToast);
     }, [onClose]);

@@ -122,6 +122,40 @@ router.patch(
     }
 );
 
+router.delete("/:hotelId",
+    verifyToken,
+    async (req, res) => {
+        try {
+            const hotelId = req.params.hotelId;
+
+            // Check if hotel exists
+            const hotel = await Hotel.findById(hotelId);
+            if (!hotel) {
+                return res.status(404).json({ message: "Hotel not found" });
+            }
+
+            // Check if the user is authorized to delete the hotel
+            if (hotel.userId !== req.userId) {
+                return res.status(403).json({ message: "Unauthorized to delete this hotel" });
+            }
+
+            // Delete Image cloudinary
+            if (hotel.imageUrls){        
+                await deleteImages(hotel.imageUrls);
+            }         
+            
+            // Delete the hotel
+            await Hotel.deleteOne({ _id: hotelId });
+
+            return res.status(200).json({ message: "Hotel deleted successfully" });
+        } catch (error) {
+            console.log("Error: ", error);
+            res.status(500).json({ message: "Something went wrong" });
+        }
+    }
+);
+
+
 async function uploadImages(imageFiles: Express.Multer.File[]) {
     const options = {
         folder: process.env.CLOUDINARY_CLOUD_FOLDER, // Specify the folder in which the file should be stored

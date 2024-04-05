@@ -16,6 +16,7 @@ type AppContext = {
 }
 //Create the AppContext with an initial value
 const AppContext = React.createContext<AppContext | undefined>(undefined);
+
 // Create a component that will provide the AppContext value
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [toast, setToast] = useState<ToastMessage | undefined>(undefined);
