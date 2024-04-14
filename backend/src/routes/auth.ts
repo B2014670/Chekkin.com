@@ -24,7 +24,8 @@ router.post("/login",
         req.body.email = req.body.email.toLowerCase();
         const { email, password } = req.body;
         try {
-            let user = await User.findOne({ email });
+            let user = await User.findOne({ email });             
+            
             if (!user) {
                 return res.status(400).json({ message: "Email or password incorrect!" });
             }
@@ -32,11 +33,10 @@ router.post("/login",
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return res.status(400).json({ message: "Email or password incorrect!" });
-            }
-
-            const token = generateAccessToken( user.id );
-
-            const refreshToken = generateRefreshToken( user.id );
+            }             
+            
+            const token = generateAccessToken(user.id, user.role );
+            const refreshToken = generateRefreshToken(user.id, user.role);
 
             res.cookie("auth_token", token, {
                 httpOnly: true,
@@ -60,7 +60,7 @@ router.post("/login",
 );
 
 router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
-    res.status(200).send({ userId: req.userId });
+    res.status(200).send({ userId: req.userId, role: req.role });
 });
 
 router.post('/token', (req: Request, res: Response) => {
@@ -73,8 +73,9 @@ router.post('/token', (req: Request, res: Response) => {
     try {
         const decoded = jwt.verify(refresh_token, process.env.JWT_SECRET_KEY as string);
         const userId = (decoded as JwtPayload).userId;
+        const role = (decoded as JwtPayload).role;
 
-        const token = generateAccessToken( userId );
+        const token = generateAccessToken( userId , role);
 
         const response = {
             "token": token,

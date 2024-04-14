@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import upload from "../middleware/multer";
 import cloudinary from "cloudinary";
 import Hotel from "../models/hotel";
-import verifyToken from "../middleware/auth";
+import { verifyBusiness } from "../middleware/auth";
 import { body } from "express-validator";
 import { HotelType } from "../shared/types";
 
@@ -11,7 +11,7 @@ const router = express.Router();
 
 // api/my-hotels
 router.post("/",
-    verifyToken,
+    verifyBusiness,
     [
         body("name").notEmpty().withMessage("Name is required"),
         body("city").notEmpty().withMessage("City is required"),
@@ -55,31 +55,32 @@ router.post("/",
     }
 );
 
-router.get("/", verifyToken, async (req: Request, res: Response) => {
-    try {
-        const hotels = await Hotel.find({ userId: req.userId });
-        res.json(hotels)
-    } catch (error) {
-        return res.status(500).json({ message: "Error went find your hotels!" });
-    }
-});
+router.get("/",
+    verifyBusiness, async (req: Request, res: Response) => {
+        try {
+            const hotels = await Hotel.find({ userId: req.userId });
+            res.json(hotels)
+        } catch (error) {
+            return res.status(500).json({ message: "Error went find your hotels!" });
+        }
+    });
 
-router.get("/:id", verifyToken, async (req: Request, res: Response) => {
-    const id = req.params.id.toString();
-    try {
-        const hotels = await Hotel.findOne({
-            _id: id,
-            userId: req.userId
-        });
-        res.json(hotels)
-    } catch (error) {
-        return res.status(500).json({ message: "Error went find this hotel!" });
-    }
-});
+router.get("/:id",
+    verifyBusiness, async (req: Request, res: Response) => {
+        const id = req.params.id.toString();
+        try {
+            const hotels = await Hotel.findOne({
+                _id: id,
+                userId: req.userId
+            });
+            res.json(hotels)
+        } catch (error) {
+            return res.status(500).json({ message: "Error went find this hotel!" });
+        }
+    });
 
-router.patch(
-    "/:hotelId",
-    verifyToken,
+router.patch("/:hotelId",
+    verifyBusiness,
     upload.array("imageFiles", 6),
     async (req: Request, res: Response) => {
         try {
@@ -123,11 +124,10 @@ router.patch(
 );
 
 router.delete("/:hotelId",
-    verifyToken,
+    verifyBusiness,
     async (req, res) => {
         try {
             const hotelId = req.params.hotelId;
-
             // Check if hotel exists
             const hotel = await Hotel.findById(hotelId);
             if (!hotel) {
@@ -140,10 +140,10 @@ router.delete("/:hotelId",
             }
 
             // Delete Image cloudinary
-            if (hotel.imageUrls){        
+            if (hotel.imageUrls) {
                 await deleteImages(hotel.imageUrls);
-            }         
-            
+            }
+
             // Delete the hotel
             await Hotel.deleteOne({ _id: hotelId });
 

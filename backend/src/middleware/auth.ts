@@ -6,25 +6,25 @@ declare global {
     namespace Express {
         interface Request {
             userId: string;
-            // Add other properties Request type
+            role: string;
         }
     }
 }
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies["auth_token"] || req.body.token || req.query.token || req.headers['x_authorization'];
-
         if (!token) {
             const refresh_token = req.cookies["auth_refresh_token"];
-
             // if refresh token exists
             if (!refresh_token) return res.status(401).send('No token provided');
 
             try {
+
                 const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_KEY as string);
                 const userId = (decoded as JwtPayload).userId;
+                const role = (decoded as JwtPayload).role;
 
-                const token = generateAccessToken( userId );
+                const token = generateAccessToken(userId, role);
 
                 res.cookie("auth_token", token, {
                     httpOnly: true,
@@ -32,25 +32,56 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
                     maxAge: 24 * 60 * 60 * 1000,
                 });
 
-                // const response = {
-                //     "token": token,
-                //     message: "access token reset"
-                // }
-                // res.status(200).json(response);
             } catch (error) {
                 return res.status(401).json({ message: "Unauthorized access" });
             }
         }
-        
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
+        const { userId, role } = decoded as JwtPayload;
         // Attach the decoded user information to the request object
-        req.userId = (decoded as JwtPayload).userId;
+        req.userId = userId;
+        req.role = role;
         next();
 
     } catch (error) {
         return res.status(401).json({ message: "Unauthorized access" });
     }
 }
+
+export const verifyUser = (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, () => {
+        const userId = req.userId;
+        const role = req.role;
+        if (userId === req.params.id || role === 'user') {
+            next();
+        } else {
+            return res.status(401).json({ message: "Unauthorized user access" });
+        }
+    });
+};
+
+export const verifyBusiness = (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, () => {
+        const userId = req.userId;
+        const role = req.role;
+        if (userId === req.params.id || role === 'business') {
+            next();
+        } else {
+            return res.status(401).json({ message: "Unauthorized business access" });
+        }
+    });
+};
+
+export const verifyAdmin = (req: Request, res: Response, next: NextFunction) => {
+    verifyToken(req, res, () => {
+        const role = req.role;
+        if (role === 'admin') {
+            next();
+        } else {
+            return res.status(401).json({ message: "Unauthorized admin access" });
+        }
+    });
+};
 
 
 export default verifyToken;

@@ -74,12 +74,12 @@ const SignIn = () => {
                 <span className="text-sm">
                     Not Registered?{" "}
                     <Link className="underline text-blue-600 font-bold" to="/register">
-                        Create an account here
+                        Create an account here.
                     </Link>
                 </span>
                 <button
                     type="submit"
-                    className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl"
+                    className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-xl rounded-sm"
                 >
                     Login
                 </button>

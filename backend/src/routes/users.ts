@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import User from "../models/user";
-import jwt from "jsonwebtoken";
 import { check, validationResult } from "express-validator";
 import { generateAccessToken, generateRefreshToken } from "../configs/generateToken";
 import verifyToken from "../middleware/auth";
@@ -9,7 +8,6 @@ const router = express.Router();
 // api/users 
 router.get("/me", verifyToken, async (req: Request, res: Response) => {
     const userId = req.userId;
-
     try {
         const user = await User.findById(userId).select("-password");
         if (!user) {
@@ -37,9 +35,11 @@ router.post("/register",
             return res.status(400).json({ message: errors.array() });
         }
         try {
+
             let user = await User.findOne({
                 email: req.body.email.toLowerCase(),
             });
+
             if (user) {
                 return res.status(401).json({ message: "User already exists!" });
             }
@@ -47,8 +47,8 @@ router.post("/register",
             user = new User(req.body);
             await user.save();
 
-            const token = generateAccessToken(user.id);
-            const refreshToken = generateRefreshToken(user.id);
+            const token = generateAccessToken(user.id, user.role);
+            const refreshToken = generateRefreshToken(user.id, user.role);
 
             res.cookie("auth_token", token, {
                 httpOnly: true,

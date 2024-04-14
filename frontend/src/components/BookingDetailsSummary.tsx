@@ -1,4 +1,5 @@
 import { HotelType } from "../../../backend/src/shared/types";
+import { format } from 'date-fns';
 
 type Props = {
   checkIn: Date;
@@ -27,11 +28,11 @@ const BookingDetailsSummary = ({
       <div className="flex justify-between">
         <div>
           Check-in
-          <div className="font-bold"> {checkIn.toDateString()}</div>
+          <div className="font-bold"> {format(checkIn, 'E dd/MM/yyyy')}</div>
         </div>
         <div>
           Check-out
-          <div className="font-bold"> {checkOut.toDateString()}</div>
+          <div className="font-bold">{format(checkOut, 'E dd/MM/yyyy')}</div>
         </div>
       </div>
       <div className="border-t border-b py-2">

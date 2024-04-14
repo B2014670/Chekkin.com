@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  role: { type: String, default: 'user' },
 });
 //hash before save
 userSchema.pre("save", async function (next) {
@@ -19,4 +20,3 @@ userSchema.pre("save", async function (next) {
 const User = mongoose.model<UserType>("User", userSchema);
 
 export default User;
-

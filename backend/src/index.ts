@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import authRouters from './routes/auth';
 import userRouters from './routes/users';
 import myHotelRouters from './routes/my-hotels';
@@ -8,12 +7,11 @@ import hotelRouters from './routes/hotels';
 import cookieParser from "cookie-parser";
 import { error } from 'console';
 import path from 'path';
-import dotenv from 'dotenv';
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import connectDB from './configs/db';
 import connectCloudinary from './configs/cloudinary';
+import loadEnv from './configs/loadEnv';
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+loadEnv();
 
 connectCloudinary();
 
@@ -39,7 +37,6 @@ app.use("/api/hotels", hotelRouters);
 app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
-
 app.listen(9000, () => {
   console.log(`Server is running at http://localhost:9000`);
 });

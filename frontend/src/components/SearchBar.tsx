@@ -12,7 +12,7 @@ const SearchBar = () => {
 
     const [destination, setDestination] = useState<string>(search.destination);
     const [checkIn, setCheckIn] = useState<Date>(search.checkIn);
-    const [checkOut, setCheckOut] = useState<Date>(search.checkOut);
+    const [checkOut, setCheckOut] = useState<Date>(addDays(search.checkIn, 1));
     const [adultCount, setAdultCount] = useState<number>(search.adultCount);
     const [childCount, setChildCount] = useState<number>(search.childCount);
 
