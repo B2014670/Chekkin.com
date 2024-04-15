@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 
-const STRIPE_PUBLIC_KEY= import.meta.env.VITE_STRIPE_PUBLIC_KEY || ""; 
+const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || "";
 
 type ToastMessage = {
     message: string;
@@ -14,9 +14,8 @@ type ToastMessage = {
 type AppContext = {
     // ToastContext
     showToast: (toastMessage: ToastMessage) => void;
-    // isLoginContext
     isLogin: boolean;
-    // StripeContext
+    role: string | null;
     stripePromise: Promise<Stripe | null>;
 
 }
@@ -27,9 +26,10 @@ const stripePromise = loadStripe(STRIPE_PUBLIC_KEY as string);
 // Create a component that will provide the AppContext value
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [toast, setToast] = useState<ToastMessage | undefined>(undefined);
-    const { isError } = useQuery("validateToken", apiClient.validateToken, {
+    const { data, isError } = useQuery("validateToken", apiClient.validateToken, {
         retry: false,
     });
+    const role = data?.role?? null;
     return (
         <AppContext.Provider
             value={{
@@ -37,6 +37,7 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
                     setToast(toastMessage)
                 },
                 isLogin: !isError,
+                role: role,
                 stripePromise
             }}
         >

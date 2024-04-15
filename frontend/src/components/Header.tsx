@@ -8,7 +8,7 @@ import { X } from 'lucide-react';
 import { currencyData } from '../config/currency';
 
 const Header = () => {
-    const { isLogin } = useAppContext();
+    const { role, isLogin } = useAppContext();
     const customStyles: Modal.Styles = {
         content: {
             top: '50%',
@@ -21,7 +21,7 @@ const Header = () => {
     };
     Modal.setAppElement('#root');
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [currency, setCurrency]  = useState<string>(() =>
+    const [currency, setCurrency] = useState<string>(() =>
         sessionStorage.getItem("currency") || 'USD'
     );
 
@@ -102,12 +102,14 @@ const Header = () => {
                             >
                                 My Bookings
                             </Link>
-                            <Link
-                                className="flex items-center text-white px-3 font-bold hover:bg-blue-600"
-                                to="/my-hotels"
-                            >
-                                My Hotels
-                            </Link>
+                            {role === 'business' && (
+                                <Link
+                                    className="flex items-center text-white px-3 font-bold hover:bg-blue-600"
+                                    to="/my-hotels"
+                                >
+                                    My Hotels
+                                </Link>
+                            )}
                             <SignOutButton />
 
                         </>
