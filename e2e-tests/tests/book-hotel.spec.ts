@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole("button", { name: "Sign Out" })).toBeVisible();
 });
 
-test("should book hotel", async ({ page }) => {
+test("book hotel", async ({ page }) => {
   await page.goto(UI_URL);
 
   await page.getByPlaceholder("Where are you going?").fill("Dublin");
@@ -61,4 +61,7 @@ test("should book hotel", async ({ page }) => {
 
   await page.getByRole("button", { name: "Confirm Booking" }).click();
   await expect(page.getByText("Booking Saved!")).toBeVisible();
+  
+  await page.getByRole("link", { name: "My Bookings" }).click();
+  await expect(page.getByText("Dublin Getaways")).toBeVisible();
 });

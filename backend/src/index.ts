@@ -4,6 +4,7 @@ import authRouters from './routes/auth';
 import userRouters from './routes/users';
 import myHotelRouters from './routes/my-hotels';
 import hotelRouters from './routes/hotels';
+import myBooingRouters from './routes/my-bookings';
 import cookieParser from "cookie-parser";
 import { error } from 'console';
 import path from 'path';
@@ -32,6 +33,7 @@ app.use("/api/auth", authRouters);
 app.use("/api/users", userRouters);
 app.use("/api/my-hotels", myHotelRouters);
 app.use("/api/hotels", hotelRouters);
+app.use("/api/my-bookings", myBooingRouters);
 
 //serve a static HTML file for all routes that don't match other routes
 app.get("*", (req: Request, res: Response) => {

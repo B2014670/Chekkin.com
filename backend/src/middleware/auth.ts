@@ -33,6 +33,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
                 });
 
             } catch (error) {
+                console.log(error)
                 return res.status(401).json({ message: "Unauthorized access" });
             }
         }
@@ -52,7 +53,7 @@ export const verifyUser = (req: Request, res: Response, next: NextFunction) => {
     verifyToken(req, res, () => {
         const userId = req.userId;
         const role = req.role;
-        if (userId === req.params.id || role === 'user') {
+        if (userId === req.params.id || role === 'user' || role === 'business') {
             next();
         } else {
             return res.status(401).json({ message: "Unauthorized user access" });

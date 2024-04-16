@@ -18,6 +18,16 @@ const Booking = () => {
 
     const [numberOfNights, setNumberOfNights] = useState<number>(0);
 
+    useEffect(() => {
+        if (search.checkIn && search.checkOut) {
+            const nights =
+                Math.abs(search.checkOut.getTime() - search.checkIn.getTime())
+                / milliseconds1day;
+
+            setNumberOfNights(Math.ceil(nights));
+        }
+    }, [search.checkIn, search.checkOut]);
+
     const { data: currentUser } = useQuery(
         "fetchCurrentUser",
         apiClient.fetchCurrentUser
@@ -43,20 +53,9 @@ const Booking = () => {
         }
     );
 
-    useEffect(() => {
-        if (search.checkIn && search.checkOut) {
-            const nights =
-                Math.abs(search.checkOut.getTime() - search.checkIn.getTime())
-                / milliseconds1day;
-
-            setNumberOfNights(Math.ceil(nights));
-        }
-    }, [search.checkIn, search.checkOut]);
-
     if (!hotel) {
         return <></>
     }
-
 
     return (
         <div className="grid md:grid-cols-[1fr] lg:grid-cols-[1fr_2fr] sm:space-y-2 md:space-y-2 lg:space-x-2 lg:space-y-0  py-5">
